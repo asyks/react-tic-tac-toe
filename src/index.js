@@ -49,6 +49,7 @@ class Game extends React.Component {
     this.state = {
       history: [{
         squares: Array(9).fill(null),
+        move: null
       }],
       stepNumber: 0,
       xIsNext: true,
@@ -60,7 +61,7 @@ class Game extends React.Component {
     const history = this.state.history.slice(0, this.state.stepNumber + 1);
     // retreive the last entry in the duplicated history array, and duplicate it
     const current = history[history.length - 1];
-    const squares = current.squares.slice();
+    let squares = current.squares.slice();
 
     // ignore clicks if there's a winner OR the square is already filled
     if (calculateWinner(squares) || squares[i]) {
@@ -74,18 +75,19 @@ class Game extends React.Component {
       {
         history: history.concat([{
           squares: squares,
+          move: i,
         }]),
         stepNumber: history.length,
         xIsNext: !this.state.xIsNext,
       }
-    )
+    );
   }
 
-  jumpTo(step) {
+  jumpTo(stepNumber) {
     this.setState({
-      stepNumber: step,
-      xIsNext: (step % 2) === 0,
-    })
+      stepNumber: stepNumber,
+      xIsNext: (stepNumber % 2) === 0,
+    });
   }
 
 
@@ -95,14 +97,14 @@ class Game extends React.Component {
     const winner = calculateWinner(current.squares);
 
     // create a list of previous moves that can be "jumped to"
-    const moves = history.map((step, move) => {
-      const desc = move ? "Go to move #" + move : "Go to game start";
+    const moves = history.map((step, stepNumber) => {
+      const desc = stepNumber ? "Go to move #" + stepNumber + " square: " + step.move : "Go to game start";
       return (
-        <li key={move}>
-          <button onClick={() => this.jumpTo(move)}>{desc}</button>
+        <li key={stepNumber}>
+          <button onClick={() => this.jumpTo(stepNumber)}>{desc}</button>
         </li>
-      )
-    })
+      );
+    });
 
     // if there's a winner display it, otherwise display who's turn is next
     let status;
