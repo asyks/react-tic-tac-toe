@@ -49,7 +49,7 @@ class Game extends React.Component {
     this.state = {
       history: [{
         squares: Array(9).fill(null),
-        move: null
+        selection: null
       }],
       stepNumber: 0,
       xIsNext: true,
@@ -84,14 +84,12 @@ class Game extends React.Component {
 
     // update the value of the clicked square in the current step
     squares[i] = this.state.xIsNext ? "X" : "O";
-    // determine the row and column of the clicked square in the current step
-    const move = this.getRowCol(i);
     // duplicate, and update the `history` array with the current step
     this.setState(
       {
         history: history.concat([{
           squares: squares,
-          move: move,
+          selection: i,
         }]),
         stepNumber: history.length,
         xIsNext: !this.state.xIsNext,
@@ -114,7 +112,9 @@ class Game extends React.Component {
 
     // create a list of previous moves that can be "jumped to"
     const moves = history.map((step, stepNumber) => {
-      const desc = stepNumber ? "Go to move #" + stepNumber + " square: (" + step.move.row + "," + step.move.col + ")" : "Go to game start";
+      // determine the row and column of the clicked square in the current step
+      const move = this.getRowCol(step.selection);
+      const desc = stepNumber ? "Go to move #" + stepNumber + " square: (" + move.row + "," + move.col + ")" : "Go to game start";
       return (
         <li key={stepNumber}>
           <button onClick={() => this.jumpTo(stepNumber)}>{desc}</button>
