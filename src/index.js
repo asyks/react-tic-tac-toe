@@ -111,13 +111,19 @@ class Game extends React.Component {
     const winner = calculateWinner(current.squares);
 
     // create a list of previous moves that can be "jumped to"
-    const moves = history.map((step, stepNumber) => {
+    const moves = history.map((step, move) => {
       // determine the row and column of the clicked square in the current step
-      const move = this.getRowCol(step.selection);
-      const desc = stepNumber ? "Go to move #" + stepNumber + " square: (" + move.row + "," + move.col + ")" : "Go to game start";
+      const coords = this.getRowCol(step.selection);
+      const desc = move ? "Go to move #" + move + " square: (" + coords.row + "," + coords.col + ")" : "Go to game start";
+      const highlight = move === this.state.stepNumber
       return (
-        <li key={stepNumber}>
-          <button onClick={() => this.jumpTo(stepNumber)}>{desc}</button>
+        <li key={move}>
+          <button
+            onClick={() => this.jumpTo(move)}
+            className={highlight ? "highlight" : null}
+          >
+            {desc}
+          </button>
         </li>
       );
     });
