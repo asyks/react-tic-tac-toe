@@ -90,6 +90,11 @@ class Game extends React.Component {
     );
   }
 
+  handleSort() {
+    const history = this.state.history.slice();
+    this.setState({ history: history.reverse() });
+  }
+
   jumpTo(stepNumber) {
     this.setState({
       stepNumber: stepNumber,
@@ -106,8 +111,14 @@ class Game extends React.Component {
     // create a list of previous moves that can be "jumped to"
     const moves = history.map((step, move) => {
       // determine the row and column of the clicked square in the current step
-      const coords = this.getRowCol(step.selection);
-      const desc = move ? "Go to move #" + move + " square: (" + coords.row + "," + coords.col + ")" : "Go to game start";
+      let desc;
+      if (step.selection === null) {
+        desc = "Go to game start";
+      }
+      else {
+        const coords = this.getRowCol(step.selection);
+        desc = "Go to move #" + move + " square: (" + coords.row + "," + coords.col + ")";
+      }
       const highlight = move === this.state.stepNumber
       return (
         <li key={move}>
@@ -141,6 +152,9 @@ class Game extends React.Component {
         <div className="game-info">
           <div>{status}</div>
           <ol>{moves}</ol>
+          <button onClick={() => this.handleSort()}>
+            Reverse Moves
+          </button >
         </div>
       </div>
     );
