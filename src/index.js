@@ -3,18 +3,24 @@ import ReactDOM from 'react-dom';
 import './index.css'
 
 function Square(props) {
+  let classNames = "square";
+  if (props.highlight) {
+    classNames = classNames.concat(" highlight");
+  }
+
   return (
-    <button className="square" onClick={props.onClick}>
+    <button className={classNames} onClick={props.onClick}>
       {props.value}
     </button >
   );
 }
 
 class Board extends React.Component {
-  renderSquare(i) {
+  renderSquare(i, highlight) {
     return (
       <Square
         value={this.props.squares[i]}
+        highlight={highlight}
         onClick={() => this.props.onClick(i)}
       />
     );
@@ -26,7 +32,11 @@ class Board extends React.Component {
     for (let row = 1; row <= 3; row++) {
       const squares = [];
       for (let column = 1; column <= 3; column++) {
-        squares.push(this.renderSquare(i));
+        let highlight = false;
+        if (this.props.winner.player && this.props.winner.line.includes(i)) {
+          highlight = true;
+        }
+        squares.push(this.renderSquare(i, highlight));
         i++;
       }
       board.push(<div className="board-row">{squares}</div>);
@@ -71,7 +81,7 @@ class Game extends React.Component {
     let squares = current.squares.slice();
 
     // ignore clicks if there's a winner OR the square is already filled
-    if (calculateWinner(squares) || squares[i]) {
+    if (calculateWinner(squares).player || squares[i]) {
       return
     }
 
@@ -134,8 +144,8 @@ class Game extends React.Component {
 
     // if there's a winner display it, otherwise display who's turn is next
     let status;
-    if (winner) {
-      status = "Winner: " + winner
+    if (winner.player) {
+      status = "Winner: " + winner.player
     }
     else {
       status = "Next player: " + (this.state.xIsNext ? "X" : "O");
@@ -146,6 +156,7 @@ class Game extends React.Component {
         <div className="game-board">
           <Board
             squares={current.squares}
+            winner={winner}
             onClick={(i) => this.handleClick(i)}
           />
         </div>
@@ -186,8 +197,8 @@ function calculateWinner(squares) {
     being checked then declare a winner
     */
     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a];
+      return { player: squares[a], line: lines[i] };
     }
   }
-  return null;
+  return { player: null, line: [] };
 }
