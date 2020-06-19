@@ -142,10 +142,13 @@ class Game extends React.Component {
       );
     });
 
-    // if there's a winner display it, otherwise display who's turn is next
+    // if there's a winner or draw display it, otherwise display who's turn is next
     let status;
     if (winner.player) {
-      status = "Winner: " + winner.player
+      status = "Winner: " + winner.player;
+    }
+    else if (determineDraw(current.squares)) {
+      status = "Draw!";
     }
     else {
       status = "Next player: " + (this.state.xIsNext ? "X" : "O");
@@ -201,4 +204,8 @@ function calculateWinner(squares) {
     }
   }
   return { player: null, line: [] };
+}
+
+function determineDraw(squares) {
+  return !squares.includes(null)
 }
